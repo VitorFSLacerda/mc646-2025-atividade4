@@ -40,7 +40,6 @@ def test_check_for_fraud(amount, prev_trans, location, blacklist, expected):
     current = _mk_tx(amount=amount, location=location, minutes_ago=0)
     result = system.check_for_fraud(current, prev_trans, blacklist)
 
-    # Compara campos individualmente para mensagens de erro mais claras
     assert result.is_fraudulent == expected.is_fraudulent
     assert result.is_blocked == expected.is_blocked
     assert result.verification_required == expected.verification_required

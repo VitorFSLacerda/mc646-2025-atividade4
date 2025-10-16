@@ -2,6 +2,7 @@ import pytest
 from datetime import datetime
 
 from src.energy.EnergyManagementSystem import SmartEnergyManagementSystem
+from src.energy.DeviceSchedule import DeviceSchedule
 
 
 def _defaults(inputs: dict) -> dict:
@@ -30,7 +31,7 @@ def _defaults(inputs: dict) -> dict:
         energy_usage_limit=30.0, total_energy_used_today=25.0,
         scheduled_devices=[]
     ), dict(device_status={"Heating": False, "Cooling": False},
-            energy_saving_mode=False, temperature_regulation_active=False)),
+            energy_saving_mode=False, temperature_regulation_active=False, total_energy_used=25.0)),
 
     # TC2 – preço acima do threshold → modo economia; devices não prioritários desligados
     (dict(
@@ -38,7 +39,7 @@ def _defaults(inputs: dict) -> dict:
         device_priorities={"Cooling": 2, "Light": 2, "Security": 1},
         energy_usage_limit=30.0, total_energy_used_today=25.0
     ), dict(device_status={"Heating": False, "Cooling": False, "Light": False, "Security": True},
-            energy_saving_mode=True, temperature_regulation_active=False)),
+            energy_saving_mode=True, temperature_regulation_active=False, total_energy_used=25.0)),
 
     # TC3 – madrugada: luz desligada, segurança ligada, geladeira ligada, etc.
     (dict(
@@ -46,42 +47,42 @@ def _defaults(inputs: dict) -> dict:
         device_priorities={"Light": 2, "Security": 1, "Refrigerator": 1},
         total_energy_used_today=25.0
     ), dict(device_status={"Light": False, "Security": True, "Refrigerator": True, "Heating": False, "Cooling": False},
-            energy_saving_mode=False, temperature_regulation_active=False)),
+            energy_saving_mode=False, temperature_regulation_active=False, total_energy_used=25.0)),
 
     # TC4 – temperatura abaixo da faixa → aquecimento
     (dict(
         current_temperature=15.0, desired_temperature_range=[20.0, 24.0],
         device_priorities={"Heating": 1}
     ), dict(device_status={"Heating": True},
-            energy_saving_mode=False, temperature_regulation_active=True)),
+            energy_saving_mode=False, temperature_regulation_active=True, total_energy_used=25.0)),
 
     # TC5 – temperatura acima da faixa → resfriamento
     (dict(
         current_temperature=30.0, desired_temperature_range=[20.0, 24.0],
         device_priorities={"Cooling": 1}
     ), dict(device_status={"Cooling": True},
-            energy_saving_mode=False, temperature_regulation_active=True)),
+            energy_saving_mode=False, temperature_regulation_active=True, total_energy_used=25.0)),
 
     # TC6 – consumo acima do limite → desligar até ficar <= limite
     (dict(
         energy_usage_limit=30.0, total_energy_used_today=31.5,
         device_priorities={"Refrigerator": 3, "Light": 2, "Security": 1}
-    ), dict(device_status={"Refrigerator": False, "Light": False, "Security": False, "Heating": False, "Cooling": False},
-            energy_saving_mode=True, temperature_regulation_active=False)),
+    ), dict(device_status={"Refrigerator": False, "Light": False, "Security": True, "Heating": False, "Cooling": False},
+            energy_saving_mode=False, temperature_regulation_active=False, total_energy_used=29.5)),
 
     # TC7 – não conseguir reduzir (ou política mantém segurança ligada)
     (dict(
         energy_usage_limit=30.0, total_energy_used_today=31.0,
         device_priorities={"Security": 1}
     ), dict(device_status={"Security": True, "Heating": False, "Cooling": False},
-            energy_saving_mode=False, temperature_regulation_active=False)),
+            energy_saving_mode=False, temperature_regulation_active=False, total_energy_used=31.0)),
 
     # TC8 – agendamento liga dispositivo específico no horário
     (dict(
         current_time=datetime(2025, 10, 16, 18, 0),
-        scheduled_devices=[("Furnace", "18:00")]
+        scheduled_devices=[DeviceSchedule("Furnace", datetime(2025, 10, 16, 18, 0))]
     ), dict(device_status={"Furnace": True, "Heating": False, "Cooling": False},
-            energy_saving_mode=False, temperature_regulation_active=False)),
+            energy_saving_mode=False, temperature_regulation_active=False, total_energy_used=25.0)),
 ])
 def test_manage_energy(inputs, expected):
     system = SmartEnergyManagementSystem()
@@ -99,7 +100,7 @@ def test_manage_energy(inputs, expected):
         scheduled_devices=p["scheduled_devices"],
     )
 
-    # O EnergyManagementResult NÃO possui o atributo total_energy_used_today — não comparar isso.
     assert result.device_status == expected["device_status"]
     assert result.energy_saving_mode == expected["energy_saving_mode"]
     assert result.temperature_regulation_active == expected["temperature_regulation_active"]
+    assert result.total_energy_used == expected["total_energy_used"]

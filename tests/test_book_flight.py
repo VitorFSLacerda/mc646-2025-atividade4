@@ -27,7 +27,7 @@ def _defaults(params: dict) -> dict:
     (dict(
         passengers=1, available_seats=10,
         booking_time=datetime(2025, 10, 16, 12, 0),
-        departure_time=datetime(2025, 10, 17, 8, 0),
+        departure_time=datetime(2025, 10, 17, 18, 0),
         current_price=100.0, reward_points_available=0,
         is_cancellation=False, previous_sales=50
     ), dict(confirmation=True, total_price=40.0, refund_amount=0.0, points_used=False)),
@@ -41,7 +41,7 @@ def _defaults(params: dict) -> dict:
     (dict(
         passengers=1,
         booking_time=datetime(2025, 10, 16, 12, 0),
-        departure_time=datetime(2025, 10, 17, 6, 0),
+        departure_time=datetime(2025, 10, 17, 0, 0),
         current_price=100.0, previous_sales=50
     ), dict(confirmation=True, total_price=140.0, refund_amount=0.0, points_used=False)),
 
@@ -52,7 +52,7 @@ def _defaults(params: dict) -> dict:
 
     # TC5 – uso de pontos recompensa parcial
     (dict(
-        passengers=1, current_price=100.0, reward_points_available=1000
+        passengers=1, current_price=100.0, previous_sales=50, reward_points_available=1000
     ), dict(confirmation=True, total_price=30.0, refund_amount=0.0, points_used=True)),
 
     # TC6 – pontos suficientes para abater tudo
@@ -72,7 +72,7 @@ def _defaults(params: dict) -> dict:
     (dict(
         is_cancellation=True,
         booking_time=datetime(2025, 10, 16, 12, 0),
-        departure_time=datetime(2025, 10, 17, 8, 0),
+        departure_time=datetime(2025, 10, 17, 18, 0),
         current_price=100.0, previous_sales=50
     ), dict(confirmation=False, total_price=0.0, refund_amount=20.0, points_used=False)),
 ])
