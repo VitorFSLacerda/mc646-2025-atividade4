@@ -1,5 +1,7 @@
 import pytest
 from datetime import datetime
+from src.energy.DeviceSchedule import DeviceSchedule
+
 
 from src.energy.EnergyManagementSystem import SmartEnergyManagementSystem
 
@@ -66,8 +68,8 @@ def _defaults(inputs: dict) -> dict:
     (dict(
         energy_usage_limit=30.0, total_energy_used_today=31.5,
         device_priorities={"Refrigerator": 3, "Light": 2, "Security": 1}
-    ), dict(device_status={"Refrigerator": False, "Light": False, "Security": False, "Heating": False, "Cooling": False},
-            energy_saving_mode=True, temperature_regulation_active=False)),
+    ), dict(device_status={"Refrigerator": False, "Light": False, "Security": True, "Heating": False, "Cooling": False},
+            energy_saving_mode=False, temperature_regulation_active=False)),
 
     # TC7 – não conseguir reduzir (ou política mantém segurança ligada)
     (dict(
@@ -79,7 +81,9 @@ def _defaults(inputs: dict) -> dict:
     # TC8 – agendamento liga dispositivo específico no horário
     (dict(
         current_time=datetime(2025, 10, 16, 18, 0),
-        scheduled_devices=[("Furnace", "18:00")]
+            scheduled_devices=[
+                DeviceSchedule("Furnace", datetime(2025, 10, 16, 18, 0))
+            ]
     ), dict(device_status={"Furnace": True, "Heating": False, "Cooling": False},
             energy_saving_mode=False, temperature_regulation_active=False)),
 ])
