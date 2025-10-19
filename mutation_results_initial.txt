@@ -1,0 +1,20 @@
+To apply a mutant on disk:
+    mutmut apply <id>
+
+To show a mutant:
+    mutmut show <id>
+
+
+Survived 🙁 (26)
+
+---- src/energy/EnergyManagementResult.py (4) ----
+
+5-8
+
+---- src/flight/FlightBookingSystem.py (7) ----
+
+17, 36, 42, 49-50, 53-54
+
+---- src/fraud/FraudDetectionSystem.py (15) ----
+
+72-73, 78, 81, 86, 88-89, 92-94, 97, 106, 108-109, 116
